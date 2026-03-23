@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coder</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.8; color: #333; }
+    pre { background: #f5f5f5; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    code { background: #f5f5f5; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; }
+    pre code { background: none; padding: 0; }
+    blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 1rem; color: #666; }
+    img { max-width: 100%; height: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    th { background: #f5f5f5; }
+  </style>
+</head>
+<body>
+网页生成中，内容包括：</p><p><h3>FILE: changelog.md</h3></p><p><pre><code class="language-md"><strong>Description</strong>: 黄金黎明：魔法师灵魂特质深度测试 H5 网页。采用黑金配色，融合神秘学与维多利亚审美。包含首页、答题页、结果页，以及完整的 8 个角色深度解析（免费+付费解锁功能）和海报生成功能。
+<strong>Files</strong>:
+<li>index.html: 主页面，包含所有组件模板和入口。Refs: TailwindCSS, Vue 3, Lucide, html2canvas, QRCode.js</li>
+<li>app.js: 核心逻辑，包含 Vue 实例、状态管理、答题逻辑、计分算法和海报生成。</li>
+<li>data.js: 题库数据和 8 个角色的完整文案数据。</li>
+<li>style.css: 自定义样式，包含字体、丝滑动效和黑金主题。</li>
+</code></pre></p><p><h3>FILE: index.html</h3></p><p><pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot;&gt;
+    &lt;title&gt;黄金黎明：魔法师灵魂特质深度测试&lt;/title&gt;
+    &lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://unpkg.com/vue@3/dist/vue.global.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://unpkg.com/lucide@latest&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js&quot;&gt;&lt;/script&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Noto+Serif+SC:wght@300;400;600;900&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
+    &lt;script&gt;
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            300: &#39;#FCE79C&#39;,
+                            500: &#39;#D4AF37&#39;,
+                            700: &#39;#AA8529&#39;,
+                        },
+                        dark: {
+                            900: &#39;#0A0A0A&#39;,
+                            800: &#39;#1A1A1A&#39;,
+                            700: &#39;#2A2A2A&#39;,
+                        }
+                    },
+                    fontFamily: {
+                        serif: [&#39;&quot;Noto Serif SC&quot;&#39;, &#39;serif&#39;],
+                        cinzel:[&#39;Cinzel&#39;, &#39;serif&#39;],
+                    }
+                }
+            }
+        }
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body class=&quot;bg-dark-900 text-gray-200 font-serif overflow-x-hidden selection:bg-gold-500 selection:text-dark-900&quot;&gt;
+    &lt;div id=&quot;app&quot; class=&quot;min-h-screen flex flex-col relative w-full max-w-md mx-auto bg-dark-800 shadow-2xl overflow-hidden&quot;&gt;
+        
+        &lt;!-- Background Elements --&gt;
+        &lt;div class=&quot;fixed inset-0 pointer-events-none z-0 opacity-20&quot;&gt;
+            &lt;div class=&quot;absolute top-0 left-0 w-full h-full bg-[url(&#39;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI0Q0QUYzNyIvPjwvc3ZnPg==&#39;)]&quot;&gt;&lt;/div&gt;
+            &lt;div class=&quot;absolute inset-0 bg-gradient-to-b from-dark-900 via-transparent to-dark-900&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;</p><p>        &lt;transition name=&quot;fade&quot; mode=&quot;out-in&quot;&gt;
+            &lt;!-- Home Screen --&gt;
+            &lt;div v-if=&quot;currentStage === &#39;home&#39;&quot; key=&quot;home&quot; class=&quot;flex-1 flex flex-col items-center justify-center p-8 relative z-10&quot;&gt;
+                &lt;div class=&quot;w-48 h-48 rounded-full border-4 border-gold-500/30 flex items-center justify-center mb-8 relative glow&quot;&gt;
+                    &lt;div class=&quot;absolute inset-0 rounded-full border-2 border-gold-500/50 rotate-45&quot;&gt;&lt;/div&gt;
+                    &lt;i data-lucide=&quot;sun&quot; class=&quot;w-20 h-20 text-gold-500&quot;&gt;&lt;/i&gt;
+                &lt;/div&gt;
+                &lt;h1 class=&quot;font-cinzel text-3xl font-bold text-gold-500 text-center mb-4 tracking-widest&quot;&gt;
+                    GOLDEN DAWN
+                &lt;/h1&gt;
+                &lt;h2 class=&quot;text-2xl font-bold text-gray-100 text-center mb-6 leading-snug&quot;&gt;
+                    魔法师灵魂特质&lt;br /&gt;深度测试
+                &lt;/h2&gt;
+                &lt;p class=&quot;text-sm text-gray-400 text-center mb-12 max-w-xs&quot;&gt;
+                    揭开维多利亚时代的神秘面纱，探索潜藏在你灵魂深处的魔法原型。
+                &lt;/p&gt;
+                &lt;button @click=&quot;startTest&quot; class=&quot;w-full max-w-xs py-4 px-6 bg-gold-500 hover:bg-gold-300 text-dark-900 font-bold rounded-none border border-gold-300 transition-all duration-300 transform hover:scale-105 uppercase tracking-widest shadow-[0_0_15px_rgba(212,175,55,0.3)]&quot;&gt;
+                    开始启程
+                &lt;/button&gt;
+            &lt;/div&gt;</p><p>            &lt;!-- Quiz Screen --&gt;
+            &lt;div v-else-if=&quot;currentStage === &#39;quiz&#39;&quot; key=&quot;quiz&quot; class=&quot;flex-1 flex flex-col p-6 relative z-10 w-full&quot;&gt;
+                &lt;div class=&quot;w-full mb-8&quot;&gt;
+                    &lt;div class=&quot;flex justify-between text-xs text-gold-500 mb-2 font-cinzel&quot;&gt;
+                        &lt;span&gt;QUESTION&lt;/span&gt;
+                        &lt;span&gt;{{ currentQuestionIndex + 1 }} / {{ questions.length }}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;w-full h-1 bg-dark-700 rounded-full overflow-hidden&quot;&gt;
+                        &lt;div class=&quot;h-full bg-gold-500 transition-all duration-500 ease-out&quot; :style=&quot;{ width: ((currentQuestionIndex + 1) / questions.length * 100) + &#39;%&#39; }&quot;&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;</p><p>                &lt;transition name=&quot;slide&quot; mode=&quot;out-in&quot;&gt;
+                    &lt;div :key=&quot;currentQuestionIndex&quot; class=&quot;flex-1 flex flex-col&quot;&gt;
+                        &lt;h3 class=&quot;text-xl font-bold text-gold-300 mb-2&quot;&gt;{{ currentQuestion.title }}&lt;/h3&gt;
+                        &lt;p class=&quot;text-gray-300 mb-8 leading-relaxed text-sm bg-dark-700/50 p-4 border-l-2 border-gold-500&quot;&gt;{{ currentQuestion.scenario }}&lt;/p&gt;
+                        
+                        &lt;div class=&quot;space-y-4 w-full&quot;&gt;
+                            &lt;button v-for=&quot;(option, index) in currentQuestion.options&quot; :key=&quot;index&quot;
+                                @click=&quot;selectOption(option)&quot;
+                                class=&quot;w-full text-left p-4 bg-dark-700 hover:bg-dark-600 border border-dark-600 hover:border-gold-500 rounded-none transition-all duration-300 flex items-start group&quot;&gt;
+                                &lt;span class=&quot;text-gold-500 font-cinzel font-bold mr-4 mt-0.5&quot;&gt;{{ option.label }}.&lt;/span&gt;
+                                &lt;span class=&quot;text-sm text-gray-200 group-hover:text-gold-300 transition-colors&quot;&gt;{{ option.text }}&lt;/span&gt;
+                            &lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/transition&gt;
+            &lt;/div&gt;</p><p>            &lt;!-- Analyzing Screen --&gt;
+            &lt;div v-else-if=&quot;currentStage === &#39;analyzing&#39;&quot; key=&quot;analyzing&quot; class=&quot;flex-1 flex flex-col items-center justify-center p-8 relative z-10&quot;&gt;
+                &lt;div class=&quot;relative w-32 h-32 flex items-center justify-center&quot;&gt;
+                    &lt;div class=&quot;absolute inset-0 border-t-2 border-gold-500 rounded-full animate-spin&quot;&gt;&lt;/div&gt;
+                    &lt;div class=&quot;absolute inset-2 border-r-2 border-gold-700 rounded-full animate-spin&quot; style=&quot;animation-direction: reverse; animation-duration: 1.5s;&quot;&gt;&lt;/div&gt;
+                    &lt;i data-lucide=&quot;eye&quot; class=&quot;w-8 h-8 text-gold-300 animate-pulse&quot;&gt;&lt;/i&gt;
+                &lt;/div&gt;
+                &lt;p class=&quot;mt-8 text-gold-500 font-cinzel tracking-widest animate-pulse&quot;&gt;
+                    ANALYZING SOUL...
+                &lt;/p&gt;
+            &lt;/div&gt;</p><p>            &lt;!-- Result Screen --&gt;
+            &lt;div v-else-if=&quot;currentStage === &#39;result&#39;&quot; key=&quot;result&quot; class=&quot;flex-1 flex flex-col relative z-10 overflow-y-auto&quot;&gt;
+                &lt;div id=&quot;poster-area&quot; class=&quot;bg-dark-800 pb-12&quot;&gt;
+                    &lt;div class=&quot;relative w-full h-80 bg-dark-900 flex items-center justify-center overflow-hidden border-b border-gold-500/30&quot;&gt;
+                        &lt;div class=&quot;absolute inset-0 opacity-30 bg-center bg-cover&quot; :style=&quot;{ backgroundImage: &#39;url(&#39; + result.image + &#39;)&#39; }&quot;&gt;&lt;/div&gt;
+                        &lt;div class=&quot;absolute inset-0 bg-gradient-to-t from-dark-800 to-transparent&quot;&gt;&lt;/div&gt;
+                        &lt;div class=&quot;relative z-10 text-center px-6 mt-16&quot;&gt;
+                            &lt;h2 class=&quot;font-cinzel text-gold-500 text-sm tracking-widest mb-2&quot;&gt;SOUL ARCHETYPE&lt;/h2&gt;
+                            &lt;h1 class=&quot;text-3xl font-bold text-white mb-2&quot;&gt;{{ result.name }}&lt;/h1&gt;
+                            &lt;p class=&quot;text-gold-300 text-sm italic&quot;&gt;{{ result.title }}&lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;</p><p>                    &lt;div class=&quot;px-6 py-8&quot;&gt;
+                        &lt;div class=&quot;mb-8 border-l-2 border-gold-500 pl-4&quot;&gt;
+                            &lt;h3 class=&quot;text-lg font-bold text-gold-500 mb-2 flex items-center&quot;&gt;
+                                &lt;i data-lucide=&quot;sparkles&quot; class=&quot;w-4 h-4 mr-2&quot;&gt;&lt;/i&gt; 免费简评
+                            &lt;/h3&gt;
+                            &lt;p class=&quot;text-gray-300 text-sm leading-relaxed&quot;&gt;{{ result.shortDesc }}&lt;/p&gt;
+                        &lt;/div&gt;</p><p>                        &lt;!-- Paywall --&gt;
+                        &lt;div v-if=&quot;!hasPaid&quot; class=&quot;bg-gradient-to-b from-dark-700 to-dark-900 border border-gold-500/30 p-6 text-center relative overflow-hidden&quot;&gt;
+                            &lt;div class=&quot;absolute top-0 right-0 w-16 h-16 bg-gold-500/10 rounded-bl-full&quot;&gt;&lt;/div&gt;
+                            &lt;h3 class=&quot;text-gold-500 font-bold mb-3&quot;&gt;🔒 解锁深度灵魂档案&lt;/h3&gt;
+                            &lt;p class=&quot;text-xs text-gray-400 mb-6&quot;&gt;包含：性格暗面、职场定位、财富投资指南、现代生活美学及专属魔法行动指南（约3000字深度解析）&lt;/p&gt;
+                            &lt;button @click=&quot;payToUnlock&quot; class=&quot;w-full py-3 bg-gold-500 text-dark-900 font-bold tracking-wider hover:bg-gold-300 transition-colors shadow-lg shadow-gold-500/20&quot;&gt;
+                                支付 ￥1.99 解锁
+                            &lt;/button&gt;
+                        &lt;/div&gt;</p><p>                        &lt;!-- Full Report --&gt;
+                        &lt;div v-else class=&quot;space-y-8 animate-fade-in&quot;&gt;
+                            &lt;div v-for=&quot;(section, idx) in result.fullReport&quot; :key=&quot;idx&quot; class=&quot;bg-dark-700/30 p-5 border border-dark-600&quot;&gt;
+                                &lt;h3 class=&quot;text-gold-400 font-bold mb-4 text-base border-b border-dark-600 pb-2 flex items-center&quot;&gt;
+                                    &lt;i :data-lucide=&quot;section.icon&quot; class=&quot;w-4 h-4 mr-2&quot;&gt;&lt;/i&gt; {{ section.title }}
+                                &lt;/h3&gt;
+                                &lt;div class=&quot;text-sm text-gray-300 space-y-3 leading-relaxed&quot; v-html=&quot;formatContent(section.content)&quot;&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;</p><p>                    &lt;!-- Poster Footer (Hidden in UI, visible in canvas) --&gt;
+                    &lt;div id=&quot;poster-footer&quot; class=&quot;hidden px-6 py-6 bg-dark-900 border-t border-dark-700 flex justify-between items-center&quot;&gt;
+                        &lt;div&gt;
+                            &lt;p class=&quot;text-gold-500 text-xs font-bold mb-1&quot;&gt;测测你的魔法师灵魂&lt;/p&gt;
+                            &lt;p class=&quot;text-gray-500 text-[10px]&quot;&gt;扫描二维码，揭开神秘面纱&lt;/p&gt;
+                        &lt;/div&gt;
+                        &lt;div id=&quot;qrcode&quot; class=&quot;w-16 h-16 bg-white p-1&quot;&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;</p><p>                &lt;!-- Fixed Bottom Actions --&gt;
+                &lt;div class=&quot;fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-dark-900/90 backdrop-blur border-t border-dark-700 flex gap-4 z-20&quot;&gt;
+                    &lt;button @click=&quot;generatePoster&quot; class=&quot;flex-1 py-3 border border-gold-500 text-gold-500 font-bold text-sm hover:bg-gold-500/10 transition-colors flex items-center justify-center&quot;&gt;
+                        &lt;i data-lucide=&quot;image&quot; class=&quot;w-4 h-4 mr-2&quot;&gt;&lt;/i&gt; 生成海报
+                    &lt;/button&gt;
+                    &lt;button @click=&quot;restart&quot; class=&quot;flex-1 py-3 bg-dark-700 text-gray-300 font-bold text-sm hover:bg-dark-600 transition-colors&quot;&gt;
+                        重新测试
+                    &lt;/button&gt;
+                &lt;/div&gt;</p><p>                &lt;!-- Poster Modal --&gt;
+                &lt;div v-if=&quot;posterUrl&quot; class=&quot;fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4&quot;&gt;
+                    &lt;img :src=&quot;posterUrl&quot; class=&quot;max-h-[70vh] w-auto max-w-full rounded-sm border border-gold-500/50 shadow-2xl mb-6&quot;&gt;
+                    &lt;p class=&quot;text-gold-500 text-sm mb-6&quot;&gt;长按保存图片分享&lt;/p&gt;
+                    &lt;button @click=&quot;posterUrl = null&quot; class=&quot;w-12 h-12 rounded-full border border-gray-500 flex items-center justify-center text-gray-500 hover:text-white hover:border-white transition-colors&quot;&gt;
+                        &lt;i data-lucide=&quot;x&quot; class=&quot;w-5 h-5&quot;&gt;&lt;/i&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/transition&gt;
+    &lt;/div&gt;</p><p>    &lt;script type=&quot;module&quot;&gt;
+        import { questions, characters } from &#39;./data.js&#39;;
+        import { initApp } from &#39;./app.js&#39;;
+        
+        initApp(questions, characters);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></p><p><h3>FILE: style.css</h3></p><p><pre><code class="language-css">.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}</p><p>.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}</p><p>.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}</p><p>.slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}</p><p>.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}</p><p>.glow {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+}</p><p>@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}</p><p>.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}</p><p>/<em> Formatted content styles </em>/
+.format-bold {
+  color: #D4AF37;
+  font-weight: 600;
+}</p><p>.format-block {
+  margin-bottom: 0.5rem;
+}</p><p>/<em> Hide scrollbar for Chrome, Safari and Opera </em>/
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}</p><p>/<em> Hide scrollbar for IE, Edge and Firefox </em>/
+.no-scrollbar {
+  -ms-overflow-style: none;  /<em> IE and Edge </em>/
+  scrollbar-width: none;  /<em> Firefox </em>/
+}
+</code></pre></p><p><h3>FILE: data.js</h3></p><p><pre><code class="language-javascript">export const questions =[
+    {
+        title: &quot;Q1：关于秘密的立场&quot;,
+        scenario: &quot;场景：你发现了一个足以颠覆现行秩序的古老咒语。你会如何处理？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;无论代价如何，立刻亲身实验它的威力。&quot;, score: { crowley: 3, farr: 1 } },
+            { label: &quot;B&quot;, text: &quot;仔细查阅古籍，确认为正统传承后，将其编入组织的仪式规范。&quot;, score: { mathers: 3, yeats: 1 } },
+            { label: &quot;C&quot;, text: &quot;将其翻译成易懂的现代语言，并解释其中的心理学意义，分享给大众。&quot;, score: { regardie: 3, blavatsky: 1 } },
+            { label: &quot;D&quot;, text: &quot;意识到这可能是某种神圣的启示，将其融入艺术创作中。&quot;, score: { moina: 3, yeats: 2 } }
+        ]
+    },
+    {
+        title: &quot;Q2：面对冲突的本能&quot;,
+        scenario: &quot;场景：组织的首领变得专横跋扈，要求你绝对服从，你第一反应是？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;直接向他发起挑战，甚至不惜建立一个更“酷”的新组织。&quot;, score: { crowley: 3, blavatsky: 2 } },
+            { label: &quot;B&quot;, text: &quot;虽然不满，但仍尽力维护组织的完整，通过文字和逻辑争取权利。&quot;, score: { yeats: 3, regardie: 1 } },
+            { label: &quot;C&quot;, text: &quot;默默地离开，前往更远的地方寻找更高阶的精神导师。&quot;, score: { bennett: 3, farr: 2 } },
+            { label: &quot;D&quot;, text: &quot;坚信自己才是正统，要求所有人都遵循最初的律法。&quot;, score: { mathers: 3 } }
+        ]
+    },
+    {
+        title: &quot;Q3：能量的来源&quot;,
+        scenario: &quot;场景：在一个安静的夜晚，你感到前所未有的灵感涌动，这股力量来自？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;远方神秘大师的感应，或是某种超验的神谕。&quot;, score: { blavatsky: 3, moina: 1 } },
+            { label: &quot;B&quot;, text: &quot;繁复的几何图形、颜色对比以及脑海中浮现的幻象。&quot;, score: { moina: 3, mathers: 1 } },
+            { label: &quot;C&quot;, text: &quot;此时此刻极度的专注，以及对过往痛苦经历的超越。&quot;, score: { bennett: 3, crowley: 1 } },
+            { label: &quot;D&quot;, text: &quot;对宇宙规律的理性剖析，以及对人类心灵结构的好奇。&quot;, score: { regardie: 3 } }
+        ]
+    },
+    {
+        title: &quot;Q4：对待名望的态度&quot;,
+        scenario: &quot;场景：如果后世的人们提起你，你希望他们如何评价？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;“令人敬畏的颠覆者与先知”&quot;, score: { crowley: 3, blavatsky: 1 } },
+            { label: &quot;B&quot;, text: &quot;“一位伟大的艺术家，他用灵魂触碰了永恒。”&quot;, score: { yeats: 3, moina: 2 } },
+            { label: &quot;C&quot;, text: &quot;“不可逾越的导师与规则制定者”&quot;, score: { mathers: 3 } },
+            { label: &quot;D&quot;, text: &quot;“一个引导他们自我疗愈的朋友”&quot;, score: { regardie: 3, farr: 1 } }
+        ]
+    },
+    {
+        title: &quot;Q5：面对身体的局限&quot;,
+        scenario: &quot;场景：如果你感到身体疲惫或疾病缠身，你会认为？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;这是必须通过意志力克服的软弱。&quot;, score: { crowley: 2, bennett: 3 } },
+            { label: &quot;B&quot;, text: &quot;这是一个信号，提醒我该关注心理健康与生理结构的平衡。&quot;, score: { regardie: 3 } },
+            { label: &quot;C&quot;, text: &quot;这种痛苦是灵感的一部分，能让我的艺术更加深刻。&quot;, score: { yeats: 3, moina: 1 } },
+            { label: &quot;D&quot;, text: &quot;这是某些负面能量的干扰，需要通过特殊的仪式来净化。&quot;, score: { mathers: 3, blavatsky: 1 } }
+        ]
+    },
+    {
+        title: &quot;Q6：关于“美”的仪式感&quot;,
+        scenario: &quot;场景：你正在为一次重要的仪式布置房间，你的视觉焦点会放在哪里？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;祭坛的比例必须分毫不差，所有的象征符号必须严格遵循古籍的颜色。&quot;, score: { mathers: 3, moina: 2 } },
+            { label: &quot;B&quot;, text: &quot;空间的光影和香氛，以及这种氛围能否让参与者的心灵产生“共鸣”。&quot;, score: { farr: 3, yeats: 1 } },
+            { label: &quot;C&quot;, text: &quot;既然“每个人都是一颗星星”，仪式感并不重要，重要的是参与者的意志是否强大。&quot;, score: { crowley: 3 } },
+            { label: &quot;D&quot;, text: &quot;简朴。即使只有一根蜡烛，只要内心纯净，就能通往神圣。&quot;, score: { bennett: 3 } }
+        ]
+    },
+    {
+        title: &quot;Q7：处理“平凡生活”的方式&quot;,
+        scenario: &quot;场景：在没钱付房租或琐事缠身时，你的内心独白是？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;这些世俗的磨难是修行的一部分，我应当在沉默中承受并超越它。&quot;, score: { bennett: 3 } },
+            { label: &quot;B&quot;, text: &quot;生活的琐事太无趣了，我更愿意沉浸在诗歌和神秘学的冥想中逃避。&quot;, score: { yeats: 3, moina: 2 } },
+            { label: &quot;C&quot;, text: &quot;运用我的人脉或“能量”，甚至不惜走一些非传统的捷径来解决问题。&quot;, score: { blavatsky: 3, crowley: 2 } },
+            { label: &quot;D&quot;, text: &quot;这是因为现实生活管理出了问题，我需要用心理学或科学的方法来重新规划。&quot;, score: { regardie: 3, mathers: 1 } }
+        ]
+    },
+    {
+        title: &quot;Q8：关于金钱与物质财富，你的真实态度是？&quot;,
+        scenario: &quot;场景：面对财富的诱惑，你的选择倾向是？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;它只是我实现宏大计划和享受极乐的工具。&quot;, score: { crowley: 3, blavatsky: 1 } },
+            { label: &quot;B&quot;, text: &quot;它能带来权力和秩序的稳固。&quot;, score: { mathers: 3 } },
+            { label: &quot;C&quot;, text: &quot;可有可无，过度追求只会让灵魂沉沦。&quot;, score: { bennett: 3, moina: 1 } },
+            { label: &quot;D&quot;, text: &quot;我更在乎它能换取多少自由和美的体验。&quot;, score: { farr: 3, yeats: 2 } }
+        ]
+    },
+    {
+        title: &quot;Q9：关于“真相”的直觉&quot;,
+        scenario: &quot;场景：当你听到一个闻所未闻的玄奥理论时，你通常如何判断它的真伪？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;只要它的逻辑自洽，且能通过科学的心理实验来验证，我就相信。&quot;, score: { regardie: 3 } },
+            { label: &quot;B&quot;, text: &quot;闭上眼感应，如果它能引发我脑海中的灵视或某种身体的震动，它就是真的。&quot;, score: { moina: 3, blavatsky: 2 } },
+            { label: &quot;C&quot;, text: &quot;翻阅最古老的文献，看它是否能与古代文明的传承挂钩。&quot;, score: { mathers: 3, yeats: 1 } },
+            { label: &quot;D&quot;, text: &quot;它是否赋予了我更强大的力量或创作灵感？如果能，它就是我的“真相”。&quot;, score: { crowley: 3, farr: 2 } }
+        ]
+    },
+    {
+        title: &quot;Q10：在团队中的定位&quot;,
+        scenario: &quot;场景：在一个秘密团体里，你最享受的角色是？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;制定规则和晋升标准的人。&quot;, score: { mathers: 3, crowley: 1 } },
+            { label: &quot;B&quot;, text: &quot;坐在角落，默默记录所有数据和仪式的细节。&quot;, score: { regardie: 3, bennett: 1 } },
+            { label: &quot;C&quot;, text: &quot;站在舞台中心，通过演讲或仪式展现迷人的魅力。&quot;, score: { farr: 3, blavatsky: 2 } },
+            { label: &quot;D&quot;, text: &quot;担任大家的“向导”，用温和的力量引导大家避开情绪陷阱。&quot;, score: { moina: 2, yeats: 2 } }
+        ]
+    },
+    {
+        title: &quot;Q11：关于“终局”的想象&quot;,
+        scenario: &quot;场景：当你修行到生命的尽头，你最希望留给世界的是什么？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;一套无懈可击的知识体系。&quot;, score: { mathers: 3, regardie: 1 } },
+            { label: &quot;B&quot;, text: &quot;能够流传百年的文学或艺术作品。&quot;, score: { yeats: 3, moina: 3 } },
+            { label: &quot;C&quot;, text: &quot;让后人敢于打破禁忌、寻找真我的勇气。&quot;, score: { crowley: 3, farr: 2 } },
+            { label: &quot;D&quot;, text: &quot;帮助普通人治愈心灵痛苦的具体方法。&quot;, score: { regardie: 2, bennett: 2 } }
+        ]
+    },
+    {
+        title: &quot;Q12：当生命走到尽头，你希望留下的墓志铭是？&quot;,
+        scenario: &quot;场景：你希望你的碑文上刻着什么？&quot;,
+        options:[
+            { label: &quot;A&quot;, text: &quot;“他活过，爱过，且摧毁过一切。”&quot;, score: { crowley: 3 } },
+            { label: &quot;B&quot;, text: &quot;“智慧的守门人，真理的捍卫者。”&quot;, score: { mathers: 3, blavatsky: 1 } },
+            { label: &quot;C&quot;, text: &quot;“尘归尘，最终融入无尽的光明。”&quot;, score: { bennett: 3, moina: 1 } },
+            { label: &quot;D&quot;, text: &quot;“一个从未停止过冒险与歌唱的灵魂。”&quot;, score: { farr: 3, yeats: 2 } }
+        ]
+    }
+];</p><p>export const characters = {
+    crowley: {
+        id: &quot;crowley&quot;,
+        name: &quot;阿莱斯特·克劳利&quot;,
+        nameEn: &quot;Aleister Crowley&quot;,
+        title: &quot;意志的极限拓荒者&quot;,
+        image: &quot;https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=800&amp;q=80&quot;,
+        shortDesc: &quot;你拥有极强的环境感知力与“降维打击”的思维，擅长在红海市场中开辟全新的生态。你不受世俗道德的束缚，追求个体真正的天命。&quot;,
+        fullReport:
+</code></pre></p><p>​
+
+</body>
+</html>
