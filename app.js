@@ -10,16 +10,20 @@ export function initApp(questions, characters) {
       const posterUrl = ref(null);
       const result = ref({});
 
-      const currentQuestion = computed(() => questions[currentQuestionIndex.value]);
+      const currentQuestion = computed(() => questions[currentQuestionIndex.value] || {});
 
       const startTest = () => {
         currentStage.value = 'quiz';
         nextTick(() => lucide.createIcons());
       };
 
+      // --- 修正后的计分逻辑 ---
       const selectOption = (option) => {
-        const role = option.score;
-        scores.value[role] = (scores.value[role] || 0) + 1;
+        // 遍历对象里的每个角色并加分
+        for (const role in option.score) {
+          scores.value[role] = (scores.value[role] || 0) + option.score[role];
+        }
+        
         if (currentQuestionIndex.value < questions.length - 1) {
           currentQuestionIndex.value++;
         } else {
@@ -30,8 +34,9 @@ export function initApp(questions, characters) {
       const calculateResult = () => {
         currentStage.value = 'analyzing';
         setTimeout(() => {
+          // 找到分值最高的角色键名
           const winner = Object.keys(scores.value).reduce((a, b) => 
-            scores.value[a] > scores.value[b] ? a : b
+            (scores.value[a] || 0) > (scores.value[b] || 0) ? a : b
           );
           result.value = characters[winner];
           currentStage.value = 'result';
@@ -40,14 +45,13 @@ export function initApp(questions, characters) {
       };
 
       const payToUnlock = () => {
-        // 这里可以放跳转面包多的链接，或者直接弹出收款码
         alert("请前往【面包多】购买解锁码，并点击下方的“输入解锁码”");
-        window.open('https://mianbaoduo.com/o/xxx'); // 替换为你的商品地址
+        window.open('https://mianbaoduo.com/o/xxx'); 
       };
 
       const unlockWithCode = () => {
         const code = prompt("请输入解锁码：");
-        if (code === "122902") { // 这里可以设成你的专属密码
+        if (code === "122902") { 
           hasPaid.value = true;
           localStorage.setItem('isMagicPaid', 'true');
           alert("解锁成功！");
@@ -68,7 +72,7 @@ export function initApp(questions, characters) {
         footer.classList.add('hidden');
       };
 
-      const formatContent = (t) => t.replace(/\n/g, '<br>');
+      const formatContent = (t) => t ? t.replace(/\n/g, '<br>') : '';
       const restart = () => window.location.reload();
 
       onMounted(() => lucide.createIcons());
