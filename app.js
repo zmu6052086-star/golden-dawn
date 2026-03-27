@@ -95,6 +95,5 @@ export function initApp(questions, characters) {
     }
   });
 
-  app.config.compilerOptions.delimiters = ['[[', ']]'];
   app.mount('#app');
 }
