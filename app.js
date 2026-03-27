@@ -1,7 +1,7 @@
 const { createApp, ref, computed, nextTick, onMounted } = Vue;
 
 export function initApp(questions, characters) {
-  createApp({
+  const app = createApp({
     setup() {
       const currentStage = ref('home');
       const currentQuestionIndex = ref(0);
@@ -17,13 +17,10 @@ export function initApp(questions, characters) {
         nextTick(() => lucide.createIcons());
       };
 
-      // --- 修正后的计分逻辑 ---
       const selectOption = (option) => {
-        // 遍历对象里的每个角色并加分
         for (const role in option.score) {
           scores.value[role] = (scores.value[role] || 0) + option.score[role];
         }
-        
         if (currentQuestionIndex.value < questions.length - 1) {
           currentQuestionIndex.value++;
         } else {
@@ -34,7 +31,6 @@ export function initApp(questions, characters) {
       const calculateResult = () => {
         currentStage.value = 'analyzing';
         setTimeout(() => {
-          // 找到分值最高的角色键名
           const winner = Object.keys(scores.value).reduce((a, b) => 
             (scores.value[a] || 0) > (scores.value[b] || 0) ? a : b
           );
@@ -45,8 +41,8 @@ export function initApp(questions, characters) {
       };
 
       const payToUnlock = () => {
-        alert("请前往【面包多】购买解锁码，并点击下方的“输入解锁码”");
-        window.open('https://mianbaoduo.com/o/xxx'); 
+        alert("请前往【面包多】购买解锁码，并点击“输入解锁码”进行解锁");
+        window.open('https://mianbaoduo.com/o/xxx'); // 填入你的链接
       };
 
       const unlockWithCode = () => {
@@ -54,22 +50,36 @@ export function initApp(questions, characters) {
         if (code === "122902") { 
           hasPaid.value = true;
           localStorage.setItem('isMagicPaid', 'true');
-          alert("解锁成功！");
+          alert("解锁成功！已开启深度档案");
           nextTick(() => lucide.createIcons());
         } else {
-          alert("码不对，请检查");
+          alert("解锁码校验失败");
         }
       };
 
       const generatePoster = async () => {
         const footer = document.getElementById('poster-footer');
         footer.classList.remove('hidden');
+        
         const qrcodeEl = document.getElementById('qrcode');
         qrcodeEl.innerHTML = '';
-        new QRCode(qrcodeEl, { text: window.location.href, width: 64, height: 64 });
-        const canvas = await html2canvas(document.getElementById('poster-area'));
-        posterUrl.value = canvas.toDataURL('image/png');
-        footer.classList.add('hidden');
+        new QRCode(qrcodeEl, { 
+            text: window.location.href, 
+            width: 64, 
+            height: 64,
+            colorDark: "#000000",
+            colorLight: "#ffffff"
+        });
+
+        setTimeout(async () => {
+            const canvas = await html2canvas(document.getElementById('poster-area'), {
+                backgroundColor: '#050505',
+                useCORS: true,
+                scale: 2
+            });
+            posterUrl.value = canvas.toDataURL('image/png');
+            footer.classList.add('hidden');
+        }, 400);
       };
 
       const formatContent = (t) => t ? t.replace(/\n/g, '<br>') : '';
@@ -83,5 +93,8 @@ export function initApp(questions, characters) {
         generatePoster, posterUrl, formatContent, restart
       };
     }
-  }).mount('#app');
+  });
+
+  app.config.compilerOptions.delimiters = ['[[', ']]'];
+  app.mount('#app');
 }
