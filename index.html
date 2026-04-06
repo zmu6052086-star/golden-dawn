@@ -24,9 +24,15 @@
             }
         }
     </script>
+    <style>
+        /* 确保弹窗动画平滑 */
+        .modal-enter-active, .modal-leave-active { transition: opacity 0.3s ease; }
+        .modal-enter-from, .modal-leave-to { opacity: 0; }
+    </style>
 </head>
 <body class="bg-dark-900 text-gray-200 font-serif selection:bg-gold-500 selection:text-dark-900">
     <div id="app" class="min-h-screen flex flex-col relative w-full max-w-md mx-auto bg-dark-800 shadow-2xl overflow-hidden">
+        
         <div class="fixed inset-0 pointer-events-none z-0 opacity-20">
             <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI0Q0QUYzNyIvPjwvc3ZnPg==')]"></div>
         </div>
@@ -83,41 +89,62 @@
                     </div>
                     <div class="px-6 py-8">
                         <div class="mb-8 border-l-2 border-gold-500 pl-4">
-                            <h3 class="text-lg font-bold text-gold-500 mb-2 flex items-center"><i data-lucide="sparkles" class="w-4 h-4 mr-2"></i> 免费简评</h3>
+                            <h3 class="text-lg font-bold text-gold-500 mb-2 flex items-center"><i data-lucide="sparkles" class="w-4 h-4 mr-2"></i> 灵魂特质解析</h3>
                             <p class="text-gray-300 text-sm leading-relaxed">{{ result.shortDesc }}</p>
                         </div>
-                        <div v-if="!hasPaid" class="bg-dark-700 border border-gold-500/30 p-6 text-center">
-                            <h3 class="text-gold-500 font-bold mb-3">🔒 解锁深度灵魂档案</h3>
-                            <button @click="payToUnlock" class="w-full py-3 bg-gold-500 text-dark-900 font-bold">支付 ￥1.99 解锁</button>
-                            <p @click="unlockWithCode" class="mt-4 text-xs text-gold-700 underline cursor-pointer">已经支付？点击输入解锁码</p>
+
+                        <div v-if="!hasPaid" class="bg-dark-700 border border-gold-500/30 p-6 text-center shadow-xl">
+                            <h3 class="text-gold-500 font-bold mb-1">🔒 解锁灵魂出厂说明书</h3>
+                            <p class="text-zinc-500 text-[10px] mb-4 tracking-tighter">内含：长效性格财运指南 + 职场避坑指南 + 魔法炼金建议</p>
+                            <button @click="payToUnlock" class="w-full py-3 bg-gold-500 text-dark-900 font-bold hover:bg-gold-300 transition-colors">支付 ￥2.99 解除封印</button>
+                            <p @click="unlockWithCode" class="mt-4 text-xs text-gold-700 underline cursor-pointer">已有解锁码？点击输入</p>
                         </div>
+
                         <div v-else class="space-y-8 animate-fade-in">
                             <div v-for="(section, idx) in result.fullReport" :key="idx" class="bg-dark-700/30 p-5 border border-dark-600">
-                                <h3 class="text-gold-400 font-bold mb-4 text-base flex items-center"><i :data-lucide="section.icon" class="w-4 h-4 mr-2"></i> {{ section.title }}</h3>
+                                <h3 class="text-gold-400 font-bold mb-4 text-base flex items-center">
+                                    <i :data-lucide="section.icon" class="w-4 h-4 mr-2"></i> {{ section.title }}
+                                </h3>
                                 <div class="text-sm text-gray-300 leading-relaxed" v-html="formatContent(section.content)"></div>
                             </div>
                         </div>
                     </div>
+
                     <div id="poster-footer" class="hidden px-6 py-6 bg-dark-900 flex justify-between items-center">
                         <p class="text-gold-500 text-xs font-bold">测测你的魔法师灵魂<br><span class="text-gray-500 font-normal">扫描二维码揭开神秘面纱</span></p>
                         <div id="qrcode" class="w-16 h-16 bg-white p-1"></div>
                     </div>
                 </div>
+
                 <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-dark-900/90 backdrop-blur border-t border-dark-700 flex gap-4 z-20">
                     <button @click="generatePoster" class="flex-1 py-3 border border-gold-500 text-gold-500 font-bold">生成海报</button>
                     <button @click="restart" class="flex-1 py-3 bg-dark-700 text-gray-300 font-bold">重新测试</button>
                 </div>
+
                 <div v-if="posterUrl" class="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4">
                     <img :src="posterUrl" class="max-h-[70vh] rounded shadow-2xl mb-6">
                     <button @click="posterUrl = null" class="w-12 h-12 rounded-full border border-gray-500 text-gray-500 flex items-center justify-center"><i data-lucide="x"></i></button>
                 </div>
             </div>
         </transition>
-    </div>
-    <script type="module">
-        import { questions, characters } from './data.js';
-        import { initApp } from './app.js';
-        initApp(questions, characters);
-    </script>
-</body>
-</html>
+
+        <transition name="modal">
+            <div v-if="showPayModal" class="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-[100] p-6 text-center">
+                <div class="bg-zinc-900 p-8 rounded-3xl border border-yellow-900/30 max-w-sm w-full shadow-2xl">
+                    <h3 class="text-yellow-600 text-xl font-bold mb-2">解除灵魂封印</h3>
+                    <p class="text-gray-400 text-[10px] mb-6">支付后请点击下方按钮或输入解锁码 122902</p>
+                    
+                    <div class="bg-white p-2 rounded-xl mb-6 inline-block">
+                        <img src="./收款码.jpg" class="w-48 h-auto mx-auto border-4 border-white shadow-inner">
+                    </div>
+
+                    <div class="space-y-3">
+                        <button @click="confirmPayment" class="w-full bg-yellow-700 hover:bg-yellow-600 py-3 rounded-full text-white font-bold transition-all shadow-lg active:scale-95">
+                            我已支付，立即解锁
+                        </button>
+                        
+                        <button @click="unlockWithCode" class="w-full border border-zinc-700 py-2 rounded-full text-gray-400 text-sm">
+                            输入解锁码
+                        </button>
+                        
+                        <button @
