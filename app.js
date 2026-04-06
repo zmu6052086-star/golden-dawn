@@ -3,12 +3,24 @@ const { createApp, ref, computed, nextTick, onMounted } = Vue;
 export function initApp(questions, characters) {
   const app = createApp({
     setup() {
+      // 1. 初始化检查：URL是否有 ?paid=true 或者 本地是否已解锁
+      const urlParams = new URLSearchParams(window.location.search);
+      const isUrlPaid = urlParams.get('paid') === 'true';
+      
       const currentStage = ref('home');
       const currentQuestionIndex = ref(0);
       const scores = ref({});
-      const hasPaid = ref(localStorage.getItem('isMagicPaid') === 'true');
-      const posterUrl = ref(null);
       const result = ref({});
+      const posterUrl = ref(null);
+      const showPayModal = ref(false); // 控制支付弹窗显示
+
+      // 判定是否解锁逻辑
+      const hasPaid = ref(localStorage.getItem('isMagicPaid') === 'true' || isUrlPaid);
+
+      // 如果检测到 URL 参数 paid=true，立即存入本地防止刷新后变回未支付
+      if (isUrlPaid) {
+        localStorage.setItem('isMagicPaid', 'true');
+      }
 
       const currentQuestion = computed(() => questions[currentQuestionIndex.value] || {});
 
@@ -40,16 +52,23 @@ export function initApp(questions, characters) {
         }, 1500);
       };
 
+      // 支付逻辑：显示包含收款码的弹窗
       const payToUnlock = () => {
-        alert("请前往【面包多】购买解锁码，并点击“输入解锁码”进行解锁");
-        window.open('https://mianbaoduo.com/o/xxx'); // 填入你的链接
+        showPayModal.value = true;
+      };
+
+      // 伪自动解锁：点击后跳转带参数的当前页面
+      const confirmPayment = () => {
+        const newUrl = window.location.origin + window.location.pathname + '?paid=true';
+        window.location.href = newUrl;
       };
 
       const unlockWithCode = () => {
-        const code = prompt("请输入解锁码：");
+        const code = prompt("请输入解锁码（或备注中的暗号）：");
         if (code === "122902") { 
           hasPaid.value = true;
           localStorage.setItem('isMagicPaid', 'true');
+          showPayModal.value = false;
           alert("解锁成功！已开启深度档案");
           nextTick(() => lucide.createIcons());
         } else {
@@ -90,10 +109,12 @@ export function initApp(questions, characters) {
       return {
         currentStage, currentQuestionIndex, questions, currentQuestion,
         startTest, selectOption, result, hasPaid, payToUnlock, unlockWithCode,
-        generatePoster, posterUrl, formatContent, restart
+        generatePoster, posterUrl, formatContent, restart, showPayModal, confirmPayment
       };
     }
   });
 
+  // 关键：解决截图里的 {{ }} 乱码问题，确保 Vue 正常解析
+  app.config.compilerOptions.delimiters = ['{{', '}}'];
   app.mount('#app');
 }
